@@ -13,13 +13,14 @@ try:
     import pickle
 except ImportError:
     import cPickle as pickle
-from pkg_resources import parse_version
 
+# initialize pygame and setup the window and variables we gonna need later
+pygame.init()
 Main_window = pygame.display.set_mode((800, 800))
-Surface = pygame.Surface
-
-# test image for the colorblind test preferable this is changeable in the program menu
-image = pygame.image.load()
+pygame.display.set_caption('Colorblind correction')
+surface = pygame.Surface((800, 800))
+# put in image we want to daltonize
+image = pygame.image.load("put in an image").convert()
 
 
 def transform_colorspace(img, mat):
@@ -70,3 +71,20 @@ def simulate_deficit(img, color_deficit="d"):
     # get the LMS values back to RGB to update the image with the corrected values
     sim_rgb = transform_colorspace(sim_lms, lms2rgb)
     return sim_rgb
+
+
+def array_to_img(arr):
+    """
+        Function to convert the numpy array we make to a PIL image.
+    :param arr: array of shape (M, N, 3)
+
+    :return: img : PIL.Image.Image
+                RGB image created from the array
+    """
+    # Make sure the values are in the range [0, 255] so that they are RGB values
+    arr = np.clip_array(arr)
+    arr = arr.astype('uint8')
+    img = Image.fromarray(arr, mode='RGB')
+    return img
+
+

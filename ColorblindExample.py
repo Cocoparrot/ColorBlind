@@ -371,3 +371,12 @@ if __name__ == '__main__':
         dalton_rgb = daltonize(orig_img, args.type)
         dalton_img = array_to_img(dalton_rgb)
         dalton_img.save(args.output_image)
+
+
+"""
+    todo pygamemenu
+    In this segment we are going to make a menu where you can choose which deficit you want to use the algorithm for.
+    If i feel very frisky i might make it so you can also upload a different image.
+    https://github.com/ppizarror/pygame-menu    
+
+"""
