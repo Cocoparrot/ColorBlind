@@ -1,8 +1,7 @@
-Credit and idea for the colorblind algorithms go to Jörg Dietric
-https://github.com/joergdietrich
+This Program holds basic functions that kind of function as colorblind filters for images.
 
-Choose the GNU license with the idea that some base algorithms are used from Jörg Dietric daltonize project.
-So if I read it right, I also need to use the license.
-
-
-https://github.com/Cocoparrot/Tinkering_Graphics_SamHendrickx
+Usage:
+  Pres 1, 2 or 3 to get the desired function.
+  1 --> 
+  2 -->
+  3 -->
