@@ -1,90 +1,50 @@
 import pygame
-import numpy as np
-from PIL import Image
-from collections import OrderedDict
 
-try:
-    import matplotlib as mpl
-    _NO_MPL = False
-except ImportError:
-    _NO_MPL = True
 
-try:
-    import pickle
-except ImportError:
-    import cPickle as pickle
 
 # initialize pygame and setup the window and variables we gonna need later
 pygame.init()
-Main_window = pygame.display.set_mode((800, 800))
+Main_window = pygame.display.set_mode((800, 600))
 pygame.display.set_caption('Colorblind correction')
-surface = pygame.Surface((800, 800))
-# put in image we want to daltonize
-image = pygame.image.load("put in an image").convert()
+#Put in the image we want to daltonize
+surface = pygame.image.load("Image.jpg").convert()
 
 
-def transform_colorspace(img, mat):
-    """
-        Using this to transform the RGB values of the image to a different color space so it is easier to convert the values
-        Arguments --> from img: array of shape (M, N, 3)
-                           mat: array of shape (3, 3) this is the conversion from on color space to a different space
-        Returns --> array of shape (M, N, 3)
-    """
-    return np.einsum("ij, ...j", mat, img)
+#Green weak
+def deuternopia(surface=pygame.Surface((1, 1))):
+    pixel = pygame.Color(0, 0, 0)
+    for x in range(surface.get_width()):
+        for y in range(surface.get_height()):
+            pixel = surface.get_at((x, y))
+            surface.set_at((x, y), pygame.Color(int(pixel.r * 0.75), int(pixel.g * 0.2), int(pixel.b * 0.8)))
 
+#Red weak
+def protonapia(surface=pygame.Surface((1,1))):
+    pixel = pygame.Color(0, 0, 0)
+    for x in range(surface.get_width()):
+        for y in range(surface.get_height()):
+            pixel = surface.get_at((x, y))
+            surface.set_at((x, y), pygame.Color(int(pixel.r * 0.4), int(pixel.g * 0.8), int(pixel.b * 0.6)))
 
-def simulate_deficit(img, color_deficit="d"):
-    """
-        This function is meant to simulate the deficit so it is easier to correct them later on so they are viewable
-        to people with the deficit
+def tritanopia(surface=pygame.Surface((1,1))):
+    pixel = pygame.Color(0, 0, 0)
+    for x in range(surface.get_width()):
+        for y in range(surface.get_height()):
+            pixel = surface.get_at((x, y))
+            surface.set_at((x, y), pygame.Color(int(pixel.r * 0.7), int(pixel.g * 0.35), int(pixel.b * 0.4)))
 
-    :param img: image file --> the image we are going to convert and correct
-    :param color_deficit: {d, t, p} --> different types of color_deficit
-                                        d = deuternopia
-                                        t = trinatopia
-                                        p = protonopia
-    :return: sim_rgb: array of shape (M, N, 3) --> the simulated image in RGB format
-    """
+#protonapia(surface)
+#deuternopia(surface)
+tritanopia(surface)
 
-    # Colorspace transformation matrices, these  are the values we need to simulate the deficit
-    cb_matrices = {
-        "d": np.array([[1, 0, 0], [0.494207, 0, 1.24827], [0, 0, 1]]),
-        "p": np.array([[0, 2.02344, -2.52581], [0, 1, 0], [0, 0, 1]]),
-        "t": np.array([[1, 0, 0], [0, 1, 0], [-0.395913, 0.801109, 0]])
-    }
-    rgb2lms = np.array([[17.8824, 43.5161, 4.11935],
-                        [3.45565, 27.1554, 3.86714],
-                        [0.0299566, 0.184309, 1.46709]])
-    # Precomputed inverse
-    lms2rgb = np.array([[8.09444479e-02, -1.30504409e-01, 1.16721066e-01],
-                        [-1.02485335e-02, 5.40193266e-02, -1.13614708e-01],
-                        [-3.65296938e-04, -4.12161469e-03, 6.93511405e-01]])
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-    img = img.copy()
-    img = img.convert('RGB')
+    Main_window.fill((255, 255, 255))
+    Main_window.blit(surface, (0, 0))
+    pygame.display.update()
 
-    rgb = np.asarray(img, dtype=float)
-    # first go from RGB to LMS space
-    lms = transform_colorspace(rgb, rgb2lms)
-    # Make the image have the deficit chosen by the input
-    sim_lms = transform_colorspace(lms, cb_matrices[color_deficit])
-    # get the LMS values back to RGB to update the image with the corrected values
-    sim_rgb = transform_colorspace(sim_lms, lms2rgb)
-    return sim_rgb
-
-
-def array_to_img(arr):
-    """
-        Function to convert the numpy array we make to a PIL image.
-    :param arr: array of shape (M, N, 3)
-
-    :return: img : PIL.Image.Image
-                RGB image created from the array
-    """
-    # Make sure the values are in the range [0, 255] so that they are RGB values
-    arr = np.clip_array(arr)
-    arr = arr.astype('uint8')
-    img = Image.fromarray(arr, mode='RGB')
-    return img
-
-
+pygame.quit()
